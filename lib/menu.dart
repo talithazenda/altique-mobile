@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'add_item_page.dart'; // Impor halaman AddItemPage
 
 class MyHomePage extends StatelessWidget {
   final String npm = '2306245554'; // NPM
@@ -17,7 +18,6 @@ class MyHomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     // Scaffold menyediakan struktur dasar halaman dengan AppBar dan body.
     return Scaffold(
-      // AppBar adalah bagian atas halaman yang menampilkan judul.
       appBar: AppBar(
         // Judul aplikasi "Altique" dengan teks putih dan tebal.
         title: const Text(
@@ -30,10 +30,50 @@ class MyHomePage extends StatelessWidget {
         // Warna latar belakang AppBar diatur menjadi coklat.
         backgroundColor: Colors.brown,
       ),
+      drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: [
+            const DrawerHeader(
+              decoration: BoxDecoration(
+                color: Colors.brown,
+              ),
+              child: Text(
+                'Menu',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 24,
+                ),
+              ),
+            ),
+            ListTile(
+              leading: const Icon(Icons.home),
+              title: const Text('Halaman Utama'),
+              onTap: () {
+                // Navigasi ke halaman utama menggunakan pushReplacement
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => MyHomePage()),
+                );
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.add),
+              title: const Text('Tambah Item'),
+              onTap: () {
+                // Navigasi ke halaman tambah item
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => AddItemPage()),
+                );
+              },
+            ),
+          ],
+        ),
+      ),
       // Body halaman dengan padding di sekelilingnya.
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        // Menyusun widget secara vertikal dalam sebuah kolom.
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
@@ -50,40 +90,29 @@ class MyHomePage extends StatelessWidget {
             // Memberikan jarak vertikal 16 unit.
             const SizedBox(height: 16.0),
 
-            // Menempatkan widget berikutnya di tengah halaman.
-            Center(
-              child: Column(
-                // Menyusun teks dan grid item secara vertikal.
-                children: [
-                  // Menampilkan teks sambutan dengan gaya tebal dan ukuran 18.
-                  const Padding(
-                    padding: EdgeInsets.only(top: 16.0),
-                    child: Text(
-                      'Welcome to Altique',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 18.0,
-                      ),
-                    ),
-                  ),
-
-                  // Grid untuk menampilkan ItemCard dalam bentuk grid 3 kolom.
-                  GridView.count(
-                    primary: true,
-                    padding: const EdgeInsets.all(20),
-                    crossAxisSpacing: 10,
-                    mainAxisSpacing: 10,
-                    crossAxisCount: 3,
-                    // Agar grid menyesuaikan tinggi kontennya.
-                    shrinkWrap: true,
-
-                    // Menampilkan ItemCard untuk setiap item dalam list items.
-                    children: items.map((ItemHomepage item) {
-                      return ItemCard(item);
-                    }).toList(),
-                  ),
-                ],
+            // Menampilkan teks sambutan dengan gaya tebal dan ukuran 18.
+            const Padding(
+              padding: EdgeInsets.only(top: 16.0),
+              child: Text(
+                'Welcome to Altique',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18.0,
+                ),
               ),
+            ),
+
+            // Grid untuk menampilkan ItemCard dalam bentuk grid 3 kolom.
+            GridView.count(
+              primary: true,
+              padding: const EdgeInsets.all(20),
+              crossAxisSpacing: 10,
+              mainAxisSpacing: 10,
+              crossAxisCount: 3,
+              shrinkWrap: true,
+              children: items.map((ItemHomepage item) {
+                return ItemCard(item);
+              }).toList(),
             ),
           ],
         ),
@@ -107,8 +136,7 @@ class InfoCard extends StatelessWidget {
       elevation: 2.0,
       child: Container(
         // Mengatur ukuran dan jarak di dalam kartu.
-        width: MediaQuery.of(context).size.width /
-            3.5, // menyesuaikan dengan lebar device yang digunakan.
+        width: MediaQuery.of(context).size.width / 3.5,
         padding: const EdgeInsets.all(16.0),
         // Menyusun title dan content secara vertikal.
         child: Column(
@@ -140,15 +168,22 @@ class ItemCard extends StatelessWidget {
       color: item.color,
       // Membuat sudut kartu melengkung.
       borderRadius: BorderRadius.circular(12),
-
       child: InkWell(
         // Aksi ketika kartu ditekan.
         onTap: () {
-          // Menampilkan pesan SnackBar saat kartu ditekan.
-          ScaffoldMessenger.of(context)
-            ..hideCurrentSnackBar()
-            ..showSnackBar(SnackBar(
-                content: Text("Kamu telah menekan tombol ${item.name}!")));
+          if (item.name == "Tambah Produk") {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => AddItemPage()),
+            );
+          } else {
+            // Menampilkan pesan SnackBar saat kartu ditekan.
+            ScaffoldMessenger.of(context)
+              ..hideCurrentSnackBar()
+              ..showSnackBar(SnackBar(
+                content: Text("Kamu telah menekan tombol ${item.name}!"),
+              ));
+          }
         },
         // Container untuk menyimpan Icon dan Text
         child: Container(
