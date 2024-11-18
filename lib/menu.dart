@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'add_item_page.dart'; // Impor halaman AddItemPage
+import 'package:provider/provider.dart';
+import 'package:pbp_django_auth/pbp_django_auth.dart';
+import 'package:altique/screens/login.dart';
 
 class MyHomePage extends StatelessWidget {
   final String npm = '2306245554'; // NPM
@@ -16,10 +19,8 @@ class MyHomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Scaffold menyediakan struktur dasar halaman dengan AppBar dan body.
     return Scaffold(
       appBar: AppBar(
-        // Judul aplikasi "Altique" dengan teks putih dan tebal.
         title: const Text(
           'Altique',
           style: TextStyle(
@@ -27,7 +28,6 @@ class MyHomePage extends StatelessWidget {
             fontWeight: FontWeight.bold,
           ),
         ),
-        // Warna latar belakang AppBar diatur menjadi coklat.
         backgroundColor: Colors.brown,
       ),
       drawer: Drawer(
@@ -50,7 +50,6 @@ class MyHomePage extends StatelessWidget {
               leading: const Icon(Icons.home),
               title: const Text('Halaman Utama'),
               onTap: () {
-                // Navigasi ke halaman utama menggunakan pushReplacement
                 Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(builder: (context) => MyHomePage()),
@@ -61,23 +60,37 @@ class MyHomePage extends StatelessWidget {
               leading: const Icon(Icons.add),
               title: const Text('Tambah Item'),
               onTap: () {
-                // Navigasi ke halaman tambah item
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => AddItemPage()),
                 );
               },
             ),
+            ListTile(
+              leading: const Icon(Icons.logout),
+              title: const Text('Logout'),
+              onTap: () async {
+                final request = context.read<CookieRequest>();
+                final response = await request.logout('http://127.0.0.1:8000/auth/logout/');
+                if (response['status']) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text(response['message'])),
+                  );
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (context) => const LoginPage()),
+                  );
+                }
+              },
+            ),
           ],
         ),
       ),
-      // Body halaman dengan padding di sekelilingnya.
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            // Row untuk menampilkan 3 InfoCard secara horizontal.
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
@@ -86,11 +99,7 @@ class MyHomePage extends StatelessWidget {
                 InfoCard(title: 'Class', content: className),
               ],
             ),
-
-            // Memberikan jarak vertikal 16 unit.
             const SizedBox(height: 16.0),
-
-            // Menampilkan teks sambutan dengan gaya tebal dan ukuran 18.
             const Padding(
               padding: EdgeInsets.only(top: 16.0),
               child: Text(
@@ -101,8 +110,6 @@ class MyHomePage extends StatelessWidget {
                 ),
               ),
             ),
-
-            // Grid untuk menampilkan ItemCard dalam bentuk grid 3 kolom.
             GridView.count(
               primary: true,
               padding: const EdgeInsets.all(20),
@@ -121,24 +128,20 @@ class MyHomePage extends StatelessWidget {
   }
 }
 
+// Kartu informasi untuk menampilkan data pengguna
 class InfoCard extends StatelessWidget {
-  // Kartu informasi yang menampilkan title dan content.
-
-  final String title; // Judul kartu.
-  final String content; // Isi kartu.
+  final String title;
+  final String content;
 
   const InfoCard({super.key, required this.title, required this.content});
 
   @override
   Widget build(BuildContext context) {
     return Card(
-      // Membuat kotak kartu dengan bayangan dibawahnya.
       elevation: 2.0,
       child: Container(
-        // Mengatur ukuran dan jarak di dalam kartu.
         width: MediaQuery.of(context).size.width / 3.5,
         padding: const EdgeInsets.all(16.0),
-        // Menyusun title dan content secara vertikal.
         child: Column(
           children: [
             Text(
@@ -154,9 +157,8 @@ class InfoCard extends StatelessWidget {
   }
 }
 
+// Item Card untuk menampilkan item dalam bentuk kartu
 class ItemCard extends StatelessWidget {
-  // Menampilkan kartu dengan ikon dan nama.
-
   final ItemHomepage item;
 
   const ItemCard(this.item, {super.key});
@@ -164,12 +166,9 @@ class ItemCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      // Menentukan warna latar belakang dari item.
       color: item.color,
-      // Membuat sudut kartu melengkung.
       borderRadius: BorderRadius.circular(12),
       child: InkWell(
-        // Aksi ketika kartu ditekan.
         onTap: () {
           if (item.name == "Tambah Produk") {
             Navigator.push(
@@ -177,7 +176,6 @@ class ItemCard extends StatelessWidget {
               MaterialPageRoute(builder: (context) => AddItemPage()),
             );
           } else {
-            // Menampilkan pesan SnackBar saat kartu ditekan.
             ScaffoldMessenger.of(context)
               ..hideCurrentSnackBar()
               ..showSnackBar(SnackBar(
@@ -185,12 +183,10 @@ class ItemCard extends StatelessWidget {
               ));
           }
         },
-        // Container untuk menyimpan Icon dan Text
         child: Container(
           padding: const EdgeInsets.all(8),
           child: Center(
             child: Column(
-              // Menyusun ikon dan teks di tengah kartu.
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Icon(
