@@ -88,3 +88,72 @@ variabel untuk mengontrol tampilan tertentu, dan variabel yang digunakan dalam p
 
 5. Bagaimana cara kamu menangani navigasi dalam aplikasi dengan banyak halaman pada Flutter?
     Untuk menangani navigasi dalam aplikasi Flutter yang memiliki banyak halaman, saya menggunakan Navigator. Saya menggunakan Navigator.push ketika saya ingin menambahkan halaman baru di atas halaman saat ini, sehingga pengguna dapat kembali ke halaman sebelumnya dengan tombol back. Pada tugas ini, saya menggunakan Navigator.push saat pengguna memilih tombol Tambah Produk pada halaman utama atau memilih opsi Tambah Item dari Drawer. 
+
+# TUGAS 9
+
+1. Mengapa perlu membuat model untuk pengambilan atau pengiriman data JSON? Apakah akan terjadi error jika tidak membuat model terlebih dahulu?
+
+    Model sangat penting dalam proses pengambilan atau pengiriman data JSON karena model berfungsi sebagai struktur atau cetak biru data yang akan digunakan dalam aplikasi. Dengan adanya model, kita dapat dengan mudah memetakan data JSON yang diterima dari server ke dalam objek yang dapat digunakan di aplikasi Flutter, dan sebaliknya. Jika tidak pakai model, proses parsing data JSON menjadi lebih kompleks dan rentan terhadap error karena kita harus menulis kode ekstra untuk menangani struktur data secara manual. Selain itu, jika struktur data berubah, kita harus menyesuaikan kode di banyak tempat. Dengan model, perubahan struktur data dapat ditangani dengan lebih efisien.
+
+2. Jelaskan fungsi dari library http yang diimplementasikan dalam tugas ini?
+    Tombol "Save" pada form tambah produk menggunakan metode POST untuk mengirim data ke server Django. Ketika pengguna menekan tombol "Save", Flutter akan membuat POST request ke endpoint Django untuk membuat produk baru.
+
+3. Jelaskan fungsi dari CookieRequest dan alasan instance CookieRequest perlu dibagikan ke semua komponen di aplikasi Flutter
+    CookieRequest adalah kelas yang digunakan untuk mengelola sesi autentikasi pengguna dengan menyimpan cookie yang diterima dari server setelah login. Fungsi utamanya yaitu:
+    - Menyimpan cookie sesi sehingga pengguna tetap login meskipun aplikasi ditutup sementara.
+    - Menyertakan cookie dalam setiap permintaan HTTP yang membutuhkan autentikasi.
+    - Mempermudah pengelolaan status login pengguna di seluruh aplikasi.
+    Instance CookieRequest perlu dibagikan ke semua komponen dalam aplikasi Flutter agar status autentikasi konsisten di seluruh aplikasi. Dengan membagikan instance yang sama, semua bagian aplikasi dapat mengetahui apakah pengguna sudah login atau belum, dan dapat mengakses atau mengubah data sesi sesuai kebutuhan.
+
+4. Jelaskan mekanisme pengiriman data mulai dari input hingga dapat ditampilkan pada Flutter!
+    - Input Data: Pengguna memasukkan data melalui antarmuka aplikasi Flutter, seperti formulir atau input teks.
+    - Mengirim Data ke Server: Aplikasi menggunakan library http untuk mengirim data tersebut ke server Django melalui permintaan HTTP (biasanya POST).
+    - Pemrosesan di Server: Server menerima permintaan, memproses data (misalnya menyimpan ke database), dan mengembalikan respon berupa data yang diperlukan atau pesan status.
+    -Menerima Respon: Aplikasi Flutter menerima respon dari server.
+    - Memparsing Data: Data yang diterima (biasanya dalam format JSON) diparsing dan diubah menjadi objek model yang telah didefinisikan.
+    - Menampilkan Data: Data yang telah diparsing kemudian ditampilkan pada antarmuka pengguna di aplikasi Flutter.
+
+ 5. Jelaskan mekanisme autentikasi dari login, register, hingga logout. Mulai dari input data akun pada Flutter ke Django hingga selesainya proses autentikasi oleh Django dan tampilnya menu pada Flutter!
+    - Register :
+        1. Pengguna mengisi formulir registrasi di Flutter.
+        2. Aplikasi mengirim data ke server Django melalui permintaan POST.
+        3. Django memvalidasi dan menyimpan data pengguna baru ke database.
+        4. Server mengirim respon sukses atau pesan error ke Flutter.
+        5. Aplikasi menampilkan pesan sesuai respon.
+    
+    - Login :
+        1. Pengguna memasukkan kredensial login di Flutter.
+        2. Aplikasi mengirim data ke server Django melalui permintaan POST.
+        3. Django memverifikasi kredensial.
+        4. Jika valid, Django mengirim cookie sesi dalam respon.
+        5. CookieRequest menyimpan cookie tersebut.
+        6. Aplikasi mengarahkan pengguna ke menu utama.
+
+    - Autentikasi selama sesi :
+        1. Setiap permintaan ke server menyertakan cookie sesi.
+        2. Django memeriksa cookie untuk mengotentikasi pengguna.
+        3. Jika valid, permintaan diproses; jika tidak, pengguna diminta login lagi.
+
+    - Logout :
+        1. Pengguna memilih opsi logout di Flutter.
+        2. Aplikasi mengirim permintaan logout ke server.
+        3. Django menghapus sesi pengguna.
+        4. CookieRequest menghapus cookie sesi.
+        5. Aplikasi mengarahkan pengguna kembali ke halaman login.
+
+6. Jelaskan bagaimana cara kamu mengimplementasikan checklist di atas secara step-by-step! (bukan hanya sekadar mengikuti tutorial)!
+
+- Memastikan jika django sudah benar di lokal
+- Saya mulai mengimplementasikan fitur registrasi akun. Saya membuat halaman registrasi (RegisterPage) yang berisi form di mana pengguna dapat memasukkan username, password, dan konfirmasi password. 
+- Saya menggunakan paket http untuk mengirim data ini sebagai POST request ke endpoint registrasi Django yang sudah disiapkan. Endpoint tersebut memproses data dan mengembalikan respons, yang kemudian saya gunakan di Flutter untuk mengarahkan pengguna ke halaman login jika registrasi berhasil, atau menampilkan pesan kesalahan jika terjadi kegagalan.
+- Selanjutnya, saya membuat halaman login di aplikasi Flutter. Halaman ini berfungsi menerima username dan password dari pengguna, yang kemudian dikirim sebagai request POST ke endpoint login di Django (/auth/login/). Jika login berhasil, saya menyimpan session cookie yang diberikan untuk digunakan dalam berkomunikasi dengan endpoint lainnya. Jika login gagal, maka aplikasi akan menampilkan pesan kesalahan.
+- Untuk mengintegrasikan sistem autentikasi Django dengan Flutter, saya menggunakan cookie session yang didapatkan dari Django setelah login berhasil. Cookie ini memungkinkan Flutter untuk melakukan request ke endpoint yang memerlukan autentikasi tanpa harus login kembali setiap kali melakukan request. 
+- Saya juga membuat endpoint logout di Django (/auth/logout/) yang akan digunakan untuk mengakhiri sesi pengguna ketika mereka memilih untuk logout dari aplikasi Flutter.
+- Saya kemudian membuat model kustom di Django yang sesuai dengan kebutuhan aplikasi, yaitu model ItemBarang yang berfungsi untuk menyimpan informasi produk seperti name, price, description, stock, category, dll. Model ini dihubungkan dengan User menggunakan ForeignKey sehingga setiap pengguna hanya dapat melihat atau mengelola item yang mereka miliki. Setelah membuat model ini, saya menjalankan migrasi untuk memastikan database memiliki struktur yang sesuai.
+- Setelah model selesai dibuat, saya mengimplementasikan endpoint JSON yang dapat mengembalikan seluruh data item dalam bentuk JSON (/json/). Endpoint ini dapat digunakan oleh aplikasi Flutter untuk mendapatkan daftar item yang sudah dibuat. 
+- Saya kemudian membuat halaman ItemEntryPage di Flutter yang menggunakan FutureBuilder untuk mendapatkan data dari endpoint JSON ini. Data yang didapatkan ditampilkan dalam bentuk list menggunakan ListView.builder. Setiap item dalam daftar memiliki tampilan yang estetis menggunakan widget custom yang bernama ItemCard.
+- Untuk melengkapi halaman daftar item, saya juga menambahkan tombol detail pada setiap item. Tombol ini mengarahkan pengguna ke halaman detail (ItemDetailPage) di mana seluruh informasi lengkap mengenai item tersebut, seperti price, stock, dan category, dapat ditampilkan. Saya memastikan bahwa tampilan dari halaman ini selaras dengan halaman daftar item dengan desain yang menggunakan warna-warna estetis dan tema coklat yang seragam.
+- Saya juga memperbaiki tampilan drawer navigasi (LeftDrawer) agar menggunakan warna coklat, sehingga tampilannya konsisten dengan seluruh aplikasi. Dalam drawer ini terdapat tombol untuk menuju halaman utama, halaman tambah produk, dan halaman daftar produk. 
+- Saya mengubah masing-masing tombol agar memiliki warna berbeda, seperti donker untuk daftar produk, army untuk tambah produk, dan maroon untuk logout, sehingga pengguna dapat lebih mudah membedakan fungsi dari masing-masing tombol.
+- Dalam proses ini, saya melakukan uji coba secara berkala, memastikan seluruh fitur berjalan dengan baik. Saat mengimplementasikan integrasi antara Django dan Flutter, saya sempat menemui kendala pada komunikasi dengan server. Oleh karena itu, saya menambahkan logging pada sisi Django dan Flutter untuk mengetahui request mana yang tidak berjalan dengan baik dan memperbaiki masalah tersebut, terutama dalam penanganan atribut yang tidak sesuai.
+
