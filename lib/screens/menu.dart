@@ -1,8 +1,10 @@
+import 'package:altique/widgets/item_card.dart';
 import 'package:flutter/material.dart';
-import 'add_item_page.dart'; // Impor halaman AddItemPage
+import 'package:altique/screens/itementry_form.dart'; // Impor halaman AddItemPage
 import 'package:provider/provider.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
 import 'package:altique/screens/login.dart';
+import 'package:altique/widgets/left_drawer.dart';
 
 class MyHomePage extends StatelessWidget {
   final String npm = '2306245554'; // NPM
@@ -62,7 +64,7 @@ class MyHomePage extends StatelessWidget {
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => AddItemPage()),
+                  MaterialPageRoute(builder: (context) => AddItemFormPage()),
                 );
               },
             ),
@@ -157,62 +159,3 @@ class InfoCard extends StatelessWidget {
   }
 }
 
-// Item Card untuk menampilkan item dalam bentuk kartu
-class ItemCard extends StatelessWidget {
-  final ItemHomepage item;
-
-  const ItemCard(this.item, {super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      color: item.color,
-      borderRadius: BorderRadius.circular(12),
-      child: InkWell(
-        onTap: () {
-          if (item.name == "Tambah Produk") {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => AddItemPage()),
-            );
-          } else {
-            ScaffoldMessenger.of(context)
-              ..hideCurrentSnackBar()
-              ..showSnackBar(SnackBar(
-                content: Text("Kamu telah menekan tombol ${item.name}!"),
-              ));
-          }
-        },
-        child: Container(
-          padding: const EdgeInsets.all(8),
-          child: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  item.icon,
-                  color: Colors.white,
-                  size: 30.0,
-                ),
-                const Padding(padding: EdgeInsets.all(3)),
-                Text(
-                  item.name,
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(color: Colors.white),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class ItemHomepage {
-  final String name;
-  final IconData icon;
-  final Color color;
-
-  ItemHomepage(this.name, this.icon, this.color);
-}
